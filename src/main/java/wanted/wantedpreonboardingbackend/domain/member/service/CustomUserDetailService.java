@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wanted.wantedpreonboardingbackend.domain.member.entity.CustomUserDetails;
 import wanted.wantedpreonboardingbackend.domain.member.entity.Member;
+import wanted.wantedpreonboardingbackend.domain.member.repository.MemberRepository;
 
 import java.util.Optional;
 
