@@ -1,0 +1,27 @@
+spring:
+  h2:
+    console.enabled: true
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    initialization-mode: always
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
+      show-sql: true
+
+jwt:
+  header: Authorization
+  secret: anNoLXNwcmluZ2Jvb3QtYW5kLWp3dC10dXRvcmlhbC10aGlzLWlzLWZvci1nZW5lcmF0aW5nLWp3dC1zZWNyZXRrZXktYmFzZTY0Cg
+  token-validity-in-seconds: 86400
+
+logging:
+  level:
+    org:
+    springframework:
+      security: DEBUG
