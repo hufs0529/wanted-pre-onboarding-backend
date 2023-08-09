@@ -9,7 +9,7 @@ import wanted.wantedpreonboardingbackend.global.entity.BaseTimeEntity;
 
 import javax.persistence.*;
 
-@Table(name = "gif")
+@Table(name = "post")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
