@@ -3,6 +3,7 @@ package wanted.wantedpreonboardingbackend.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,16 +21,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
 
     @Transactional
-    public void signUp(MemberRequestDto memberSignUpDto) throws Exception {
-        Member member = memberSignUpDto.toEntity();
+    public void signUp(MemberRequestDto memberRequestDto) throws Exception {
+        Member member = memberRequestDto.toEntity();
 
         member.encodePassword(passwordEncoder);
 
-        if (memberRepository.existsByEmail(memberSignUpDto.getEmail())) {
+        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
             throw new Exception();
         }
         memberRepository.save(member);
@@ -39,7 +40,7 @@ public class MemberService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(memberRequestDto.getEmail(), memberRequestDto.getPassword());
 
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateToken(authentication);

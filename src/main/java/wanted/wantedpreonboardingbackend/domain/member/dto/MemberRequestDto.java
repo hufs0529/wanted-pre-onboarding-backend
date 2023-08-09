@@ -27,7 +27,11 @@ public class MemberRequestDto {
     }
 
     public Member toEntity() {
-        return Member.builder().email(email).password(password).build();
+
+        return Member.builder()
+                .email(email)
+                .password(password)
+                .build();
     }
 
     public UsernamePasswordAuthenticationToken toAuthentication() {

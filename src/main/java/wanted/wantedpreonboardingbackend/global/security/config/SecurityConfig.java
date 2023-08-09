@@ -36,6 +36,12 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .antMatchers("/h2-console/**", "/favicon.ico","/localhost:3000/**");
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
@@ -43,12 +49,6 @@ public class SecurityConfig {
         provider.setUserDetailsService((UserDetailsService) memberController);
 
         return new ProviderManager(provider);
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .antMatchers("/h2-console/**", "/favicon.ico","/localhost:3000/**");
     }
 
     @Bean

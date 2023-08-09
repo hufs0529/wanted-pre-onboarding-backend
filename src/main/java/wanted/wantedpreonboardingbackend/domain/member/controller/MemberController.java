@@ -19,14 +19,13 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
 
 
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<MemberRequestDto> signUp(@Valid @RequestBody MemberRequestDto memberSignUpDto) throws Exception {
-        memberService.signUp(memberSignUpDto);
-        return ResponseEntity.ok(memberSignUpDto);
+    public ResponseEntity<MemberRequestDto> signUp(@Valid @RequestBody MemberRequestDto memberRequestDto) throws Exception {
+        memberService.signUp(memberRequestDto);
+        return ResponseEntity.ok(memberRequestDto);
     }
 
     @PostMapping("/login")
