@@ -1,7 +1,6 @@
 package wanted.wantedpreonboardingbackend.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -45,6 +44,6 @@ public class MemberService {
 
         String jwt = tokenProvider.generateToken(authentication);
 
-        return new TokenDto(jwt);
+        return new TokenDto(jwt,"");
     }
 }

@@ -2,6 +2,7 @@ package wanted.wantedpreonboardingbackend.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import wanted.wantedpreonboardingbackend.domain.post.dto.*;
 import wanted.wantedpreonboardingbackend.domain.post.entity.Post;
 import wanted.wantedpreonboardingbackend.domain.post.repository.CustomPostRepository;
 import wanted.wantedpreonboardingbackend.domain.post.repository.PostRepository;
+import wanted.wantedpreonboardingbackend.global.exception.PostNotFoundException;
+import wanted.wantedpreonboardingbackend.global.exception.UserLoginException;
 
 
 @Service
@@ -24,24 +27,26 @@ public class PostService {
     private final CustomPostRepository customPostRepository;
 
 
-    public String checkWriter(Post post) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = ((UserDetails) principal).getUsername();
+    public String checkWriter() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
+            throw new UserLoginException("로그인된 사용자가 없습니다.");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
 
         return email;
     }
 
 
+
     public Post save(PostSaveDto postSaveDto) throws Exception {
         Post post = postSaveDto.toEntity();
-        Member member = memberRepository.findByEmail(checkWriter(post));
+        Member member = memberRepository.findByEmail(checkWriter());
         post.confirmWriter(member);
-
-        if(member.getEmail() == post.getWriter().getEmail()){
-            postRepository.save(post);
-        }else{
-            throw new Exception("로그인된 사용자가 없습니다");
-        }
+        postRepository.save(post);
         return post;
     }
 
@@ -50,15 +55,14 @@ public class PostService {
     }
 
 
-    public PostInfoDto getPostInfo(Long postId) throws Exception {
+    public PostInfoDto getPostInfo(Long postId) {
         return new PostInfoDto(postRepository.findWriterById(postId)
-                .orElseThrow(()-> new Exception()));
-
+                .orElseThrow(() -> new PostNotFoundException("게시물이 존재하지 않습니다.")));
     }
 
     public PostUpdateDto update(Long postId, PostUpdateDto postUpdateDto) throws Exception {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new Exception());
-        Member member = memberRepository.findByEmail(checkWriter(post));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시물이 존재하지 않습니다."));
+        Member member = memberRepository.findByEmail(checkWriter());
 
         if (member.getEmail().equals(post.getWriter().getEmail())) {
             if (postUpdateDto.title().isPresent()) {
@@ -67,20 +71,16 @@ public class PostService {
             if (postUpdateDto.content().isPresent()) {
                 post.setContent(postUpdateDto.content().get());
             }
-        } else {
-            throw new Exception("로그인된 사용자가 없습니다");
         }
         return postUpdateDto;
     }
 
     public String delete(Long postId) throws Exception {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new Exception());
-        Member member = memberRepository.findByEmail(checkWriter(post));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시물이 존재하지 않습니다."));
+        Member member = memberRepository.findByEmail(checkWriter());
 
         if (member.getEmail().equals(post.getWriter().getEmail())){
             postRepository.deleteById(postId);
-        }else {
-            throw new Exception("로그인된 사용자가 없습니다");
         }
         return postId + " id의 게시물이 지워졌습니다";
     }

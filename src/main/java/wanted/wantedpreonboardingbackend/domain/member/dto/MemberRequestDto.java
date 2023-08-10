@@ -4,7 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import wanted.wantedpreonboardingbackend.domain.member.entity.Member;
-
+import org.apache.commons.lang3.StringUtils;
+import javax.validation.ValidationException;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -36,6 +37,15 @@ public class MemberRequestDto {
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
+    }
+
+    public void validate() {
+        if (StringUtils.isBlank(email)) {
+            throw new ValidationException("이메일을 입력해주세요");
+        }
+        if (StringUtils.isBlank(password)) {
+            throw new ValidationException("비밀번호를 입력해주세요");
+        }
     }
 
 }
