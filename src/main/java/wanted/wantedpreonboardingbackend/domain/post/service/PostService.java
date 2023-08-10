@@ -26,7 +26,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final CustomPostRepository customPostRepository;
 
-
     public String checkWriter() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -39,8 +38,6 @@ public class PostService {
 
         return email;
     }
-
-
 
     public Post save(PostSaveDto postSaveDto) throws Exception {
         Post post = postSaveDto.toEntity();

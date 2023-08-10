@@ -8,14 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import wanted.wantedpreonboardingbackend.domain.member.dto.MemberRequestDto;
 import wanted.wantedpreonboardingbackend.domain.member.service.MemberService;
+import wanted.wantedpreonboardingbackend.global.exception.ValidationException;
 import wanted.wantedpreonboardingbackend.global.jwt.JwtFilter;
 import wanted.wantedpreonboardingbackend.global.jwt.dto.TokenDto;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/member")
@@ -30,13 +32,14 @@ public class MemberController {
 
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<MemberRequestDto> signUp(@Valid @RequestBody MemberRequestDto memberRequestDto) throws Exception {
+    public ResponseEntity<MemberRequestDto> signUp(@Valid @RequestBody MemberRequestDto memberRequestDto) {
         try {
             memberService.signUp(memberRequestDto);
             return ResponseEntity.ok(memberRequestDto);
-        } catch (MethodArgumentNotValidException ex) {
-            logger.warn("Validation failed: {}", ex.getMessage());
-            throw ex;
+        } catch (ValidationException ex) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("validationError", ex.getMessage());
+            return ResponseEntity.badRequest().body((MemberRequestDto) errorMap);
         }
     }
 
@@ -52,6 +55,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenDto(null, "인증에 실패하였습니다."));
         }
     }
+
 
 
 }

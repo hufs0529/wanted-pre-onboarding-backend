@@ -11,8 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import wanted.wantedpreonboardingbackend.domain.member.dto.MemberRequestDto;
 import wanted.wantedpreonboardingbackend.domain.member.entity.Member;
 import wanted.wantedpreonboardingbackend.domain.member.repository.MemberRepository;
+import wanted.wantedpreonboardingbackend.global.exception.DuplicateEmailException;
+import wanted.wantedpreonboardingbackend.global.exception.ValidationException;
 import wanted.wantedpreonboardingbackend.global.jwt.TokenProvider;
 import wanted.wantedpreonboardingbackend.global.jwt.dto.TokenDto;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,16 +27,17 @@ public class MemberService {
     private final TokenProvider tokenProvider;
 
     @Transactional
-    public void signUp(MemberRequestDto memberRequestDto) throws Exception {
+    public void signUp(MemberRequestDto memberRequestDto) throws ValidationException, DuplicateEmailException {
         Member member = memberRequestDto.toEntity();
 
         member.encodePassword(passwordEncoder);
 
         if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
-            throw new Exception();
+            throw new DuplicateEmailException("Email already exists");
         }
         memberRepository.save(member);
     }
+
 
     public TokenDto authenticateAndGenerateToken(MemberRequestDto memberRequestDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
