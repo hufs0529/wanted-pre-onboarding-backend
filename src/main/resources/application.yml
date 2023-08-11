@@ -10,9 +10,9 @@ spring:
 #    initialization-mode: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/penterest?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: Abcd123@
+    url: jdbc:mysql://{rds endpoint}:3306/penterest?serverTimezone=UTC&characterEncoding=UTF-8
+    username: username
+    password: password
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
